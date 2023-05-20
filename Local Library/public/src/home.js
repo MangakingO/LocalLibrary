@@ -16,26 +16,38 @@ function getBooksBorrowedCount(books) {
   return borrowedBooks;
 }
 
-function getMostCommonGenres(books) {
-  // Create an object to keep track of genre counts
-  const genreCount = {};
-
-  // Iterate through the books array and count the occurrence of each genre
-  books.forEach(book => {
-    const genre = book.genre;
-    if (genreCount[genre]) {
-      genreCount[genre]++;
-    } else {
-      genreCount[genre] = 1;
+// Helper function to get the count of occurrences of an item in an array
+function getCountOfItem(array, item) {
+  return array.reduce((count, currentItem) => {
+    if (currentItem === item) {
+      return count + 1;
     }
+    return count;
+  }, 0);
+}
+
+// Function to get the most common genres
+function getMostCommonGenres(books) {
+  const genres = books.map((book) => book.genre);
+
+  // Get unique genres
+  const uniqueGenres = [...new Set(genres)];
+
+  // Count occurrences of each genre
+  const genreCounts = uniqueGenres.map((genre) => {
+    return {
+      name: genre,
+      count: getCountOfItem(genres, genre),
+    };
   });
 
-  // Convert the object into an array of [key, value] pairs, then sort in descending order of count
-  const sortedGenres = Object.entries(genreCount).sort((a, b) => b[1] - a[1]);
+  // Sort genres by count in descending order
+  genreCounts.sort((a, b) => b.count - a.count);
 
-  // Take the top 5 genres (or fewer if there is a tie)
-  return sortedGenres.slice(0, 5).map(([name, count]) => ({ name, count }));
+  // Return the top five genres or less
+  return genreCounts.slice(0, 5);
 }
+
 
 
 
